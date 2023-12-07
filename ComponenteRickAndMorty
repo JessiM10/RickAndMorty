@@ -1,0 +1,77 @@
+import React, {useState, useEffect} from 'react';
+import axios from 'axios';
+
+const RickAndMorty = () => {
+    const [characters, setCharacters] = useState([]);
+     const [currentIndex, setCurrentIndex] = useState(0);
+  
+    useEffect(() => {
+      const fetchCharacters = async () => {
+        try {
+          const response = await axios.get('https://rickandmortyapi.com/api/character/');
+          setCharacters(response.data.results);
+        } catch (error) {
+          console.error('Error fetching data from the API:', error);
+          setCharacters([]);
+        }
+      };
+  
+      fetchCharacters();
+    }, []);
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % characters.length);
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + characters.length) % characters.length);
+  };
+
+  const currentCharacter = characters[currentIndex];
+  
+    return (
+      <div>
+        <h1 className = 'Rick' >Personajes de Rick and Morty</h1>
+        {characters.length > 0 ? (
+            <div>
+          <CharacterTable character={currentCharacter} />
+          <div>
+            <button className='anterior' onClick={handlePrev}>ANTERIOR</button>
+            <button className='siguiente' onClick={handleNext}>SIGUIENTE</button>
+          </div>
+          </div>
+        ) : (
+          <p>Cargando personajes...</p>
+        )}
+      </div>
+    );
+  };
+  
+  const CharacterTable = ({ character }) => {
+    return (
+      <table className="mi-tabla">
+        <thead>
+          <tr className = 'columP'>
+            <th className = 'colum'>Foto          </th>
+            <th className = 'colum'>Nombre        </th>
+            <th className = 'colum'>Especie       </th>
+            <th className = 'colum'>Origen        </th>
+            <th className = 'colum'>Estado        </th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr key={character.id}>
+              <td>
+                <img src={character.image} alt={character.name} />
+              </td>
+              <td>{character.name}</td>
+              <td>{character.species}</td>
+              <td>{character.origin.name}</td>
+              <td>{character.status}</td>
+            </tr>
+        </tbody>
+      </table>
+    );
+  };
+  
+  export default RickAndMorty;
